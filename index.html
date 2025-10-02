@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #ee9ca7; /* Fallback color */
+            background-image: url("data:image/svg+xml,%3csvg width='100' height='100' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z' fill='rgba(255,255,255,0.2)'/%3e%3c/svg%3e"), 
+                              linear-gradient(135deg, #ffdde1, #ee9ca7);
+        }
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        .heart-pulse {
+            animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+        }
+        @keyframes float-up {
+            0% { transform: translateY(0) scale(0.8); opacity: 0.8; }
+            100% { transform: translateY(-20px) scale(0.4); opacity: 0; }
+        }
+        .floating-heart {
+            position: absolute;
+            color: white;
+            font-size: 1rem;
+            animation: float-up 2s ease-in-out infinite;
+            text-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-md mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden">
+        
+        <!-- Calculator View -->
+        <div id="calculator-view">
+            <!-- Header -->
+            <div class="p-6 bg-pink-500 text-white text-center">
+                <h1 class="text-3xl font-bold">Test Love</h1>
+                <p class="mt-1 opacity-80">Discover everything about your feelings</p>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6 md:p-8">
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Enter two names that match</h2>
+                    <div class="mb-4">
+                        <input id="name1" type="text" placeholder="Your Name" class="w-full p-4 text-center border-2 border-gray-200 rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-200 outline-none transition-all duration-300">
+                    </div>
+                    <div class="text-4xl text-pink-400 my-4">+</div>
+                    <div class="mb-6">
+                        <input id="name2" type="text" placeholder="Partner's Name" class="w-full p-4 text-center border-2 border-gray-200 rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-200 outline-none transition-all duration-300">
+                    </div>
+                    <button onclick="calculateLove()" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        Start test
+                    </button>
+                    <div id="error-message" class="mt-6 text-red-500 font-bold min-h-[24px]"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results View (Initially Hidden) -->
+        <div id="results-view" class="hidden">
+            <div class="p-4 flex items-center bg-[#FFF0F5]">
+                <button onclick="playAgain()" class="text-pink-500 text-3xl font-bold">&larr;</button>
+            </div>
+            <div class="bg-[#FFF0F5] pt-2 pb-8 px-4">
+                 <div class="relative flex justify-center items-center h-40">
+                    <!-- Names with ribbons -->
+                    <div class="absolute left-0 transform -translate-x-2 bg-[#4FC3F7] text-white text-xl font-bold py-2 pl-4 pr-12 shadow-lg" style="clip-path: polygon(0% 0%, 100% 0%, 90% 50%, 100% 100%, 0% 100%);">
+                        <span id="result-name1"></span>
+                        <div class="absolute top-0 right-1 w-8 h-full">
+                            <span class="floating-heart" style="top: 20%; left: 10%; animation-delay: 0s;">❤️</span>
+                            <span class="floating-heart" style="top: 60%; left: 40%; animation-delay: 0.5s;">❤️</span>
+                            <span class="floating-heart" style="top: 40%; left: 70%; animation-delay: 1s;">❤️</span>
+                        </div>
+                    </div>
+                    <div class="absolute right-0 transform translate-x-2 bg-[#4FC3F7] text-white text-xl font-bold py-2 pr-4 pl-12 shadow-lg" style="clip-path: polygon(10% 50%, 0% 0%, 100% 0%, 100% 100%, 0% 100%);">
+                        <div class="absolute top-0 left-1 w-8 h-full">
+                            <span class="floating-heart" style="top: 30%; left: 20%; animation-delay: 0.2s;">❤️</span>
+                            <span class="floating-heart" style="top: 70%; left: 50%; animation-delay: 0.7s;">❤️</span>
+                            <span class="floating-heart" style="top: 50%; left: 80%; animation-delay: 1.2s;">❤️</span>
+                        </div>
+                        <span id="result-name2"></span>
+                    </div>
+                 </div>
+
+                <!-- Heart with score -->
+                <div class="relative w-48 h-48 flex items-center justify-center mx-auto -mt-8 mb-4 heart-pulse">
+                     <svg class="absolute w-full h-full text-pink-500 drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                     </svg>
+                     <span id="result-percentage" class="relative text-white text-6xl font-bold drop-shadow-md">0%</span>
+                </div>
+
+                <!-- Animated Progress Bars -->
+                <div id="progress-bars-container" class="flex justify-center space-x-3 my-6 h-[150px]"></div>
+
+                <div class="text-center">
+                    <p id="romantic-quote" class="text-xl text-gray-700 mb-4 min-h-[56px] flex items-center justify-center"></p>
+                    <button class="w-full max-w-xs mx-auto bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300">
+                        Share Result
+                    </button>
+                    <button onclick="playAgain()" class="mt-4 text-pink-500 font-bold">
+                        Play Again
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const calculatorView = document.getElementById('calculator-view');
+        const resultsView = document.getElementById('results-view');
+        const name1Input = document.getElementById('name1');
+        const name2Input = document.getElementById('name2');
+        const errorMessage = document.getElementById('error-message');
+
+        const quotes = [
+            "You are my today<br>and all of my tomorrows.",
+            "To love and be loved is to feel<br>the sun from both sides.",
+            "I have found the one<br>whom my soul loves.",
+            "In all the world, there is no<br>heart for me like yours.",
+            "If I know what love is,<br>it is because of you.",
+            "My heart is and always<br>will be yours."
+        ];
+
+        function calculateLove() {
+            const name1 = name1Input.value.trim();
+            const name2 = name2Input.value.trim();
+
+            if (name1 === "" || name2 === "") {
+                errorMessage.innerText = "Please enter both names!";
+                return;
+            }
+            errorMessage.innerText = "";
+
+            document.getElementById('result-name1').innerText = name1;
+            document.getElementById('result-name2').innerText = name2;
+            
+            // Set a random quote
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            document.getElementById('romantic-quote').innerHTML = randomQuote;
+
+            const finalPercentage = Math.floor(Math.random() * (100 - 82 + 1)) + 82;
+            const percentageDiv = document.getElementById('result-percentage');
+            let currentPercent = 0;
+            
+            const interval = setInterval(() => {
+                percentageDiv.innerText = `${currentPercent}%`;
+                if (currentPercent >= finalPercentage) {
+                    clearInterval(interval);
+                    animateProgressBars(finalPercentage); // Pass percentage to the animation function
+                } else {
+                    currentPercent++;
+                }
+            }, 30);
+
+            calculatorView.classList.add('hidden');
+            resultsView.classList.remove('hidden');
+        }
+
+        function animateProgressBars(finalPercentage) {
+            const container = document.getElementById('progress-bars-container');
+            container.innerHTML = ''; // Clear previous bars
+            const emojis = ['🥰', '💍', '💔', '🧑‍🤝‍🧑', '🥳'];
+            
+            emojis.forEach((emoji, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'flex flex-col items-center';
+
+                const bar = document.createElement('div');
+                bar.className = 'w-6 h-28 bg-gray-200 rounded-full overflow-hidden flex flex-col-reverse';
+
+                const fill = document.createElement('div');
+                fill.style.transition = 'height 1.5s cubic-bezier(0.25, 1, 0.5, 1)';
+                fill.style.height = '0%';
+                
+                const colors = {
+                    '🥰': ['#ff9a9e', '#fecfef'],
+                    '💍': ['#84fab0', '#8fd3f4'],
+                    '💔': ['#fccb90', '#d57eeb'],
+                    '🧑‍🤝‍🧑': ['#e0c3fc', '#8ec5fc'],
+                    '🥳': ['#f6d365', '#fda085']
+                };
+                const randomColor = colors[emoji];
+                fill.style.background = `linear-gradient(to top, ${randomColor[0]}, ${randomColor[1]})`;
+                
+                const emojiSpan = document.createElement('span');
+                emojiSpan.className = 'mt-2 text-2xl';
+                emojiSpan.innerText = emoji;
+
+                bar.appendChild(fill);
+                wrapper.appendChild(bar);
+                wrapper.appendChild(emojiSpan);
+                container.appendChild(wrapper);
+
+                setTimeout(() => {
+                    let targetHeight = 20; // Default minimum height
+                    if (emoji === '🥰' || emoji === '💍') {
+                        targetHeight = finalPercentage;
+                    } else if (emoji === '🥳') {
+                        targetHeight = 50;
+                    }
+                    fill.style.height = `${targetHeight}%`;
+                }, index * 200);
+            });
+        }
+        
+        function playAgain() {
+            resultsView.classList.add('hidden');
+            calculatorView.classList.remove('hidden');
+            name1Input.value = '';
+            name2Input.value = '';
+            errorMessage.innerText = '';
+            document.getElementById('progress-bars-container').innerHTML = '';
+        }
+    </script>
+
+</body>
+</html>
+
